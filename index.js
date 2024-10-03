@@ -17,19 +17,28 @@ let formulario = [
     { id: 8, nome: "Viagens", descriçao: "Registro de viagens" },
     { id: 9, nome: "Usuario", descriçao: "Cadastro de Usuario" },
     { id: 10, nome: "Veterinaria", descriçao: "Agendamento na Veterinaria" }
-
+    //aqui fica os registro fixos
 ]
 
 //funçao para gerencia as rotas
 
 const manageFormulario = (req, res, id) => {
-    const formularioIndex = id - 1;
+    const formularioIndex = formulario.findIndex(f => f.id === id);
 
+    //se a requisiçao http for igaul a "GET", execute o segundo if
     if (req.method === 'GET') {
+        if (formularioIndex === -1 ) { //caso nao tiver um id igual a 0 ou maior, execute ....
+            return res.status(404).json({message: "Formulario nao encontrado"})
+        }
         return res.json(formulario[formularioIndex])
     }
     if (req.method === 'PUT') {
+        if (formularioIndex === -1) {
+            return res.status(404).json({message: "Formulario nao encontrado"})
+        }
         formulario[formularioIndex] = {...formulario[formularioIndex], ...req.body }
+        return res.json(formulario[formularioIndex])
+
     }
     if (req.method === 'POST') {
         const novoFormulario = req.body
@@ -41,19 +50,22 @@ const manageFormulario = (req, res, id) => {
         return res.status(201).json(novoFormulario)
     }
     if (req.method === 'DELETE') {
+        if ( formularioIndex === -1) {
+            return res.status(404).json({message: "Formulario nao encontrado"})
+        }
         formulario.splice(formularioIndex, 1)
         return res.status(204).send()
     }
     
 };
 
-for (let i = 1; i <= formulario.length; i++) {
-    app.route(`/formulario/${i}`)
-        .get((req, res) => manageFormulario(req, res, i))
-        .put((req, res) => manageFormulario(req, res, i))
-        .post((req, res) => manageFormulario(req, res, i))
-        .delete((req, res) => manageFormulario(req, res, i))
-}
+
+app.route(`/formulario/:id`)
+    .get((req, res) => manageFormulario(req, res, parseInt(req.params.id)))
+    .put((req, res) => manageFormulario(req, res, parseInt(req.params.id)))
+    .post((req, res) => manageFormulario(req, res, parseInt(req.params.id)))
+    .delete((req, res) => manageFormulario(req, res, parseInt(req.params.id)))
+
 
 app.listen(port, () => {
     console.log(`Esta rodando em http://localhost:${port}`)
