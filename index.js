@@ -32,16 +32,20 @@ const manageFormulario = (req, res, id) => {
         }
         return res.json(formulario[formularioIndex])
     }
+    //metodo para atualizar 
     if (req.method === 'PUT') {
         if (formularioIndex === -1) {
             return res.status(404).json({message: "Formulario nao encontrado"})
         }
+        /*esse código está atualizando um objeto específico em um array com novos dados que vêm de uma requisição,
+         mantendo as propriedades existentes e sobrescrevendo aquelas que estão presentes em req.body*/
         formulario[formularioIndex] = {...formulario[formularioIndex], ...req.body }
         return res.json(formulario[formularioIndex])
 
     }
+    //metodo para enviar 
     if (req.method === 'POST') {
-        const novoFormulario = req.body
+        const novoFormulario = req.body //req.body contem os dados que o cliente enviou 
         const existe = formulario.some(f => f.id === novoFormulario.id )
         if (existe) {
             return res.status(400).json({message:  "Um formulário com este ID já existe meu rei, chefe, capitao, consagrado e etc..."})
@@ -49,6 +53,7 @@ const manageFormulario = (req, res, id) => {
         formulario.push(novoFormulario)
         return res.status(201).json(novoFormulario)
     }
+    //metodo para deletar
     if (req.method === 'DELETE') {
         if ( formularioIndex === -1) {
             return res.status(404).json({message: "Formulario nao encontrado"})
@@ -67,6 +72,8 @@ app.route(`/formulario/:id`)
     .delete((req, res) => manageFormulario(req, res, parseInt(req.params.id)))
 
 
+//ligando o servidor
 app.listen(port, () => {
-    console.log(`Esta rodando em http://localhost:${port}`)
+    console.log(`Esta rodando em http://localhost:${port}`) //${port} e a variavel 'port', que e e igual a 3000
+    //ou seja, a porta e 3000
 })
